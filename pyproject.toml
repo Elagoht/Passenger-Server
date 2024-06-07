@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "passenger-server"
+version = "0.1.0"
+description = "Web Server Interface to interact with Passenger CLI"
+readme = "README.md"
+requires-python = ">=3.6"
+
+[tool.setuptools.packages.find]
+where = ["app"]
