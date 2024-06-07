@@ -1,29 +1,34 @@
 import subprocess
 from typing import Tuple, Callable, Any
-from flask import jsonify, request
+from flask import jsonify, request, Response
 from functools import wraps
 import json
 
 
-def service(verb: str, *arguments: str) -> Tuple[str, int]:
+def service(verb: str, *arguments: str) -> Tuple[Any, int]:
     """
     Interact with the passenger CLI application.
     """
     try:
         result = subprocess.run(
-            ["app/passenger", verb] +
-            [json.dumps(argument) if isinstance(
-                argument, dict) else argument for argument in arguments if argument is not None],
+            ['app/passenger', verb] +
+            [str(argument) for argument in arguments if argument is not None],
             capture_output=True,
             text=True
         )
 
-        return (
-            result.stdout.strip().split("\n")[0].replace("passenger: ", ""),
-            result.returncode
-        )
+        output = result.stdout.strip().split(
+            "\n")[0].replace('passenger: ', '')
+        try:
+            # Try to parse output as JSON
+            output = json.loads(output)
+        except json.JSONDecodeError:
+            # If not JSON, return as is
+            pass
+
+        return output, result.returncode
     except Exception as e:
-        return (str(e), 1)
+        return str(e), 1
 
 
 def get_requested_fields(function: Callable[..., Any]) -> Callable[..., Any]:
@@ -35,6 +40,8 @@ def get_requested_fields(function: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(function)
     def decorated(*args: Any, **kwargs: Any) -> Any:
         try:
+            if not request.is_json:
+                return jsonify(error="Invalid JSON"), 400
             data = request.get_json()
         except Exception as e:
             return jsonify(error="Invalid JSON"), 400
@@ -45,7 +52,7 @@ def get_requested_fields(function: Callable[..., Any]) -> Callable[..., Any]:
             if field not in data:
                 return jsonify(error=f"Missing field: {field}"), 400
 
-        return function(*[json.dumps(data.get(field)) if isinstance(data.get(field), dict) else data.get(field) for field in fields], **kwargs)
+        return function(*[data.get(field) for field in fields], **kwargs)
     return decorated
 
 
@@ -58,22 +65,23 @@ def service_route(success_code: int, error_code: int, *fields: str) -> Callable[
         @wraps(function)
         def decorated(*args: Any, **kwargs: Any) -> Any:
             token = args[0] if args else None
-            if request.method == "GET":
+            if request.method == 'GET':
                 output, returncode = service(function.__name__, token)
             else:
                 data = request.get_json() or {}
                 values = [data.get(field) for field in fields]
                 if token:
                     output, returncode = service(
-                        function.__name__, token, *values
-                    )
+                        function.__name__, token, *values)
                 else:
                     output, returncode = service(function.__name__, *values)
 
-            return (
-                jsonify(result=output), success_code
-            ) if returncode == 0 else (
-                jsonify(error=output), error_code
-            )
+            if isinstance(output, dict):
+                response_content = jsonify(result=output)
+            else:
+                response_content = jsonify(result=str(output))
+
+            response_status = success_code if returncode == 0 else error_code
+            return response_content, response_status
         return decorated
     return decorator
