@@ -10,13 +10,17 @@ def auth_required(function: Callable[..., Any]) -> Callable[..., Any]:
     """
     @wraps(function)
     def decorated(*args: Any, **kwargs: Any) -> Any:
-        if "Authorization" in request.headers:
-            authorization = request.headers["Authorization"]
-            if authorization.startswith("Bearer "):
-                token = authorization.split(" ")[1]
-                if token:
-                    return function(token, *args, **kwargs)
+        if "Authorization" not in request.headers:
+            return jsonify({"message": "Token is missing or invalid!"}), 401
 
-        return jsonify({"message": "Token is missing or invalid!"}), 401
+        authorization = request.headers["Authorization"]
+        if not authorization.startswith("Bearer "):
+            return jsonify({"message": "Token is missing or invalid!"}), 401
+
+        token = authorization.split(" ")[1]
+        if not token:
+            return jsonify({"message": "Token is missing or invalid!"}), 401
+
+        return function(token, *args, **kwargs)
 
     return decorated
