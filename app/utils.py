@@ -1,6 +1,6 @@
 import subprocess
 from typing import Tuple, Callable, Any
-from flask import jsonify, request, Response
+from flask import jsonify, request
 from functools import wraps
 import json
 
@@ -24,7 +24,7 @@ def service(verb: str, *arguments: str) -> Tuple[Any, int]:
             output = json.loads(output)
         except json.JSONDecodeError:
             # If not JSON, return as is
-            pass
+            output = output  # better than empty pass statement
 
         return output, result.returncode
     except Exception as e:
@@ -38,7 +38,7 @@ def get_requested_fields(function: Callable[..., Any]) -> Callable[..., Any]:
     400 response with corresponding field name.
     """
     @wraps(function)
-    def decorated(*args: Any, **kwargs: Any) -> Any:
+    def decorated(*_: Any, **kwargs: Any) -> Any:
         try:
             if not request.is_json:
                 return jsonify(error="Invalid JSON"), 400
@@ -63,7 +63,7 @@ def service_route(success_code: int, error_code: int, *fields: str) -> Callable[
     """
     def decorator(function: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(function)
-        def decorated(*args: Any, **kwargs: Any) -> Any:
+        def decorated(*args: Any) -> Any:
             token = args[0] if args else None
             if request.method == 'GET':
                 output, returncode = service(function.__name__, token)
