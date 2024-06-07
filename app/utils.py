@@ -43,3 +43,25 @@ def get_requested_fields(function: Callable[..., Any]) -> Callable[..., Any]:
 
         return function(*[data.get(field) for field in fields], **kwargs)
     return decorated
+
+
+def service_route(success_code: int, error_code: int, *fields: str) -> Callable[..., Any]:
+    """
+    Decorator for service route. It calls the service function with the function name
+    and returns the appropriate response based on the return code.
+    """
+    def decorator(function: Callable[..., Any]) -> Callable[..., Any]:
+        @wraps(function)
+        def decorated(*args: Any, **kwargs: Any) -> Any:
+            data = request.get_json() or {}
+            values = [data.get(field) for field in fields]
+
+            output, returncode = service(function.__name__, *values)
+
+            return (
+                jsonify(result=output), success_code
+            ) if returncode == 0 else (
+                jsonify(error=output), error_code
+            )
+        return decorated
+    return decorator
