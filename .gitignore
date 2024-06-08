@@ -8,3 +8,9 @@ passenger.bus
 
 # python cache
 __pycache__/
+*.pyc
+
+# build files
+*.egg-info/
+build/
+dist/

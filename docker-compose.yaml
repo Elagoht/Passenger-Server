@@ -1,0 +1,12 @@
+services:
+  flask:
+    build: .
+    ports:
+      - "9854:9854"
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
