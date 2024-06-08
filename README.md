@@ -7,7 +7,7 @@
 ![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/Elagoht/Passenger-server)
 ![GitHub License](https://img.shields.io/github/license/Elagoht/Passenger-server)
 
-Passenger Server, is the Web backend to interact Passenger over HTTP. You can think Passenger CLI as a kernel and Passenger Server as a shell. You can use cli tool standalone, but if you want to access its power over Web, here is the server.
+Passenger Server is the Web backend to interact with Passenger over HTTP. You can think of Passenger CLI as a kernel and Passenger Server as a shell. You can use the CLI tool standalone, but if you want to access its power over the Web, here is the server.
 
 The main idea of ​​using Passenger as a web server was born to be able to use it on your own 'self-hosted' server. This project is not designed for general use scenarios.
 
@@ -15,50 +15,62 @@ The main idea of ​​using Passenger as a web server was born to be able to us
 
 ### Manual Method
 
+> [!NOTE]
+> This method can be used for development purposes. *For self hosting*, **use the Docker method**.
+
 1. Create a virtual environment.
 
-```sh
-python -m venv .venv
-# or python3 -m venv .venv
-```
+    ```sh
+    python -m venv .venv
+    # or python3 -m venv .venv
+    ```
 
-2. Activate virtual environment.
+2. Activate the virtual environment.
 
-> On POSIX systems (such as GNU/Linux, BSD, MacOS)
+    > On POSIX systems (such as GNU/Linux, BSD, MacOS)
 
-```sh
-source .venv/bin/activate
-```
+    ```sh
+    source .venv/bin/activate
+    ```
 
-> On Windows
+    > On Windows
 
-Visit <https://distrochooser.de> and <https://etcher.balena.io>
+    Visit <https://distrochooser.de> and <https://etcher.balena.io>
 
-> [!WARNING]
-> This is more than a joke. This project began to be developed based on the idea of "zero trust". After announcing the `Recall`, we cannot trust Windows anymore. You can run this project also on Windows as well but we do not recommend it.
+    > [!WARNING]
+    > This is more than a joke. This project began to be developed based on the idea of "zero trust". After announcing the `Recall`, we cannot trust Windows anymore. You can run this project on Windows as well, but we do not recommend it.
 
-1. Install the requirements.
+3. Install the requirements.
 
-```sh
-pip install -r requirements.txt
-```
+    ```sh
+    pip install -r requirements.txt
+    ```
 
 4. Run the server
 
-```sh
-python run.py
-# or python3 run.py
-```
+    ```sh
+    python run.py
+    # or python3 run.py
+    ```
 
 ### Docker Container Method
 
-Soon!
+> [!NOTE]
+> Use this method for self hosting. This is a production-ready build version of the Web API.
+
+1. Build and run the Docker container.
+
+    ```sh
+    docker-compose up --build
+    ```
+
+    This command will build the Docker image and start the Flask application along with Nginx as a reverse proxy.
 
 ## Usage
 
 Once the server is running, you can access the API endpoints at `http://localhost:9854`.
 
-Available endpoints
+Available endpoints:
 * <http://localhost:9854/login>
 * <http://localhost:9854/register>
 * <http://localhost:9854/reset>
