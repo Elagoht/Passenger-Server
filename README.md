@@ -24,38 +24,38 @@ You **MUST** have the corresponding executable of Passenger CLI on `app/`. You c
 
 1. Create a virtual environment.
 
-    ```sh
-    python -m venv .venv
-    # or python3 -m venv .venv
-    ```
+```sh
+python -m venv .venv
+# or python3 -m venv .venv
+```
 
 2. Activate the virtual environment.
 
-    > On POSIX systems (such as GNU/Linux, BSD, MacOS)
+> On POSIX systems (such as GNU/Linux, BSD, MacOS)
 
-    ```sh
-    source .venv/bin/activate
-    ```
+```sh
+source .venv/bin/activate
+```
 
-    > On Windows
+> On Windows
 
-    Visit <https://distrochooser.de> and <https://etcher.balena.io>
+Visit <https://distrochooser.de> and <https://etcher.balena.io>
 
-    > [!WARNING]
-    > This is more than a joke. This project began to be developed based on the idea of "zero trust". After announcing the `Recall`, we cannot trust Windows anymore. You can run this project on Windows as well, but we do not recommend it.
+> [!WARNING]
+> This is more than a joke. This project began to be developed based on the idea of "zero trust". After announcing the `Recall`, we cannot trust Windows anymore. You can run this project on Windows as well, but we do not recommend it.
 
 3. Install the requirements.
 
-    ```sh
-    pip install -r requirements.txt
-    ```
+```sh
+pip install -r requirements.txt
+```
 
 4. Run the server
 
-    ```sh
-    python run.py
-    # or python3 run.py
-    ```
+```sh
+python run.py
+# or python3 run.py
+```
 
 ### Docker Container Method
 
@@ -64,11 +64,11 @@ You **MUST** have the corresponding executable of Passenger CLI on `app/`. You c
 
 1. Build and run the Docker container.
 
-    ```sh
-    docker-compose up --build
-    ```
+```sh
+docker-compose up --build
+```
 
-    This command will build the Docker image and start the Flask application along with Nginx as a reverse proxy.
+This command will build the Docker image and start the Flask application along with Nginx as a reverse proxy.
 
 ## Usage
 
