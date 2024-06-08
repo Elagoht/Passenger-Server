@@ -13,6 +13,10 @@ The main idea of ​​using Passenger as a web server was born to be able to us
 
 ## Installation
 
+### Prerequisites
+
+You **MUST** have the corresponding executable of Passenger CLI on `app/`. You can download it on [release page](https://github.com/Elagoht/Passenger-cli/releases) of the project.
+
 ### Manual Method
 
 > [!NOTE]
