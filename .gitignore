@@ -3,6 +3,9 @@
 /node_modules
 /build
 
+# core application files
+core/
+
 # Logs
 logs
 *.log
