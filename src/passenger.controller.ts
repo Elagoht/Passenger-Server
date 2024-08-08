@@ -1,104 +1,321 @@
 import {
-  Body, Controller, Delete, Get,
-  Header, Param, Post, Put, Query,
-  UploadedFile, UseInterceptors
+  Body, Controller, Delete, Get, Header,
+  Headers, HttpStatus, Param, Post, Put,
+  Query, Res, UploadedFile, UseInterceptors
 } from "@nestjs/common"
 import { FileInterceptor } from "@nestjs/platform-express"
+import { Response } from 'express'
 import {
-  AuthRequest, ManipulateRequest,
+  AuthRequest, ImportRequest, ManipulateRequest,
   PassphraseEntryRequest,
   ResetMasterPassphraseRequest
 } from "./passenger.dto"
+import {
+  loginToPassenger, registerToPassenger,
+  resetMasterPassphrase
+} from "./services/authServices"
+import { exportToCSV, importFromBrowser } from "./services/dataTransferServices"
+import { generatePassphrase, manipulatePassphrase } from "./services/generationServices"
+import { versionNumber } from "./services/otherServices"
+import {
+  createEntry, deleteEntry, fetchAllEntries,
+  fetchEntry, queryEntries, updateEntry
+} from "./services/passphraseServices"
+import { getDetectiveReports, getStatistics } from "./services/reportServices"
+import Translate from "./utilities/Translate"
 
 @Controller("/")
 export class PassengerController {
   @Post("register")
-  register(@Body() body: AuthRequest) {
-    return `Hello, ${body.username}! We created your account with passphrase ${body.passphrase}.`
+  async register(
+    @Body() body: AuthRequest,
+    @Res() response: Response
+  ) {
+    const output = await registerToPassenger(
+      body.username,
+      body.passphrase
+    )
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send({
+      message: output.exitCode === 0
+        ? "Registration successful."
+        : output.stderr
+    })
   }
 
   @Post("login")
-  login(@Body() body: AuthRequest) {
-    return `Hello, ${body.username}! Your passphrase is ${body.passphrase}.`
+  async login(
+    @Body() body: AuthRequest,
+    @Res() response: Response
+  ) {
+    const output = await loginToPassenger(
+      body.username,
+      body.passphrase
+    )
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0
+      ? { accessToken: output.stdout }
+      : { message: output.stderr })
   }
 
   @Post("reset")
-  reset(@Body() body: ResetMasterPassphraseRequest) {
-    return `Hello, ${body.username}! Your old passphrase was ${body.passphrase}, and your new passphrase is ${body.newPassphrase}.`
+  async reset(
+    @Body() body: ResetMasterPassphraseRequest,
+    @Headers("authorization") authorization: string,
+    @Res() response: Response
+  ) {
+    const output = await resetMasterPassphrase(
+      authorization,
+      body.oldPassphrase,
+      body.newPassphrase
+    )
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send({
+      message: output.exitCode === 0
+        ? "Master passphrase reset successful."
+        : output.stderr
+    })
   }
 
   @Post("create")
-  create(@Body() body: PassphraseEntryRequest) {
-    return `Your passphrase entry for ${body.identity
-      } on ${body.platform
-      } which published at ${body.url
-      } is ${body.passphrase
-      }. ${body.notes
-        ? `Notes: ${body.notes}`
-        : ""
-      }`
+  async create(
+    @Body() body: PassphraseEntryRequest,
+    @Headers("authorization") authorization: string,
+    @Res() response: Response
+  ) {
+    const output = await createEntry(authorization, body)
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode === 0
+        ? HttpStatus.CREATED
+        : output.exitCode
+      )
+    ).send(output.exitCode === 0
+      ? JSON.parse(output.stdout)
+      : { message: output.stderr }
+    )
   }
 
-  @Get("fetchAll")
-  fetchAll() {
-    return "All your passphrase entries have been fetched."
+  @Get("fetch-all")
+  async fetchAll(
+    @Headers("authorization") authorization: string,
+    @Res() response: Response
+  ) {
+    const output = await fetchAllEntries(
+      authorization
+    )
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0
+      ? JSON.parse(output.stdout)
+      : { message: output.stderr }
+    )
   }
 
   @Get("fetch/:uuid")
-  fetch(@Param("uuid") uuid: string) {
-    return `Your passphrase entry with UUID ${uuid} has been fetched.`
+  async fetch(
+    @Param("uuid") uuid: string,
+    @Headers("authorization") authorization: string,
+    @Res() response: Response
+  ) {
+    const output = await fetchEntry(authorization, uuid)
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0 ? {
+      entry: JSON.parse(output.stdout)
+    } : {
+      message: output.stderr
+    })
   }
 
   @Get("query")
-  query(@Query("q") q: string) {
-    return `Your search query is ${q}.`
+  async query(
+    @Query("q") q: string,
+    @Headers("authorization") authorization: string,
+    @Res() response: Response
+  ) {
+    const output = await queryEntries(authorization, q)
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0 ? {
+      entries: JSON.parse(output.stdout)
+    } : {
+      message: output.stderr
+    })
   }
 
   @Put("update/:uuid")
-  update(@Param("uuid") uuid: string) {
-    return `Your passphrase entry with UUID ${uuid} has been updated.`
+  async update(
+    @Param("uuid") uuid: string,
+    @Headers("authorization") authorization: string,
+    @Body() body: PassphraseEntryRequest,
+    @Res() response: Response
+  ) {
+    const output = await updateEntry(authorization, uuid, body)
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0
+      ? JSON.parse(output.stdout)
+      : { message: output.stderr }
+    )
   }
 
   @Delete("delete/:uuid")
-  delete(@Param("uuid") uuid: string) {
-    return `Your passphrase entry with UUID ${uuid} has been deleted.`
+  async delete(
+    @Param("uuid") uuid: string,
+    @Headers("authorization") authorization: string,
+    @Res() response: Response
+  ) {
+    const output = await deleteEntry(authorization, uuid)
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0
+      ? JSON.parse(output.stdout)
+      : { message: output.stderr }
+    )
   }
 
   @Get("stats")
-  stats() {
-    return "Here are your stats."
+  async stats(
+    @Headers("authorization") authorization: string,
+    @Res() response: Response
+  ) {
+    const output = await getStatistics(authorization)
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0
+      ? JSON.parse(output.stdout)
+      : { message: output.stderr }
+    )
   }
 
   @Get("detect")
-  detect() {
-    return "Detective did his job for you."
+  async detect(
+    @Headers("authorization") authorization: string,
+    @Res() response: Response
+  ) {
+    const output = await getDetectiveReports(authorization)
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0
+      ? JSON.parse(output.stdout)
+      : { message: output.stderr }
+    )
   }
 
   @Post("import")
   @UseInterceptors(FileInterceptor("file"))
-  import(@UploadedFile() file: Express.Multer.File) {
-    return `Your file ${file.originalname} has been imported.`
+  async import(
+    @Headers("authorization") authorization: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() body: ImportRequest,
+    @Res() response: Response
+  ) {
+    const output = await importFromBrowser(
+      authorization,
+      body.browser,
+      file.buffer.toString("utf-8")
+    )
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0
+      ? JSON.parse(output.stdout)
+      : { message: output.stderr }
+    )
   }
 
   @Get("export")
   @Header("Content-Type", "text/csv")
-  export() {
-    return `platform,identity,url,passphrase,notes
-Google,john doe,https://accounts.google.com,123456,This is a note.`
+  async export(
+    @Headers("authorization") authorization: string,
+    @Query("type") type: "bare" | "encrypted",
+    @Res() response: Response
+  ) {
+    const output = await exportToCSV(authorization, type)
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0
+      ? output.stdout
+      : { message: output.stderr }
+    )
   }
 
   @Get("generate")
-  generate(@Query("length") length?: number) {
-    return `Your generated passphrase is ${"x".repeat(length ?? 32)}.`
+  async generate(
+    @Query("length") length: number = 32,
+    @Res() response: Response,
+  ) {
+    const output = await generatePassphrase(length <= 4096
+      ? length
+      : 32
+    )
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0 ? {
+      generated: output.stdout,
+      ...(length > 4096
+        ? { message: "Length exceeds 4096, defaulting to 32." }
+        : {}
+      )
+    } : {
+      message: output.stderr
+    })
   }
 
   @Post("manipulate")
-  manipulate(@Body() body: ManipulateRequest) {
-    return `Your passphrase is ${body.passphrase.toUpperCase()}.`
+  async manipulate(
+    @Body() body: ManipulateRequest,
+    @Res() response: Response
+  ) {
+    if (!body.passphrase) return response
+      .status(HttpStatus.BAD_REQUEST)
+      .send({
+        message: "Passphrase is required."
+      })
+
+    if (body.passphrase.length > 4096) return response
+      .status(HttpStatus.BAD_REQUEST)
+      .send({
+        message: "Passphrase length exceeds 4096."
+      })
+
+    const output = await manipulatePassphrase(body.passphrase)
+
+    return response.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0 ? {
+      manipulated: output.stdout
+    } : {
+      message: output.stderr
+    })
   }
 
   @Get("version")
-  version() {
-    return { version: "0.3.0-beta.1" }
+  async version(@Res() res: any) {
+    const output = await versionNumber()
+
+    return res.status(
+      Translate.exitToStatus(output.exitCode)
+    ).send(output.exitCode === 0 ? {
+      version: output.stdout
+    } : {
+      message: output.stderr
+    })
   }
 }
