@@ -132,3 +132,9 @@ export const SwaggerPassphraseGenerated = () => ApiResponse({
   description: "Passphrase generated",
   schema: GeneratedPassphraseSchema
 })
+
+export const SwaggerVersionFetched = () => ApiResponse({
+  status: HttpStatus.OK,
+  description: "Version information",
+  schema: generateMessageSchema("Passenger CLI X.Y.Z")
+})
