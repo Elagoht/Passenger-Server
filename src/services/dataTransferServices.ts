@@ -32,7 +32,6 @@ export const exportToCSV = async (
 ): Promise<Output> =>
   await execute(
     "export", [
-    jwt,
     exportType
   ], {
     env: {

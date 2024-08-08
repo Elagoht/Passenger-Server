@@ -1,11 +1,21 @@
 import {
-  Body, Controller, Delete, Get, Header,
+  Body, Controller, Delete, Get,
   HttpStatus, Param, Post, Put, Query,
   Req, Res, UploadedFile, UseInterceptors
 } from "@nestjs/common"
 import { FileInterceptor } from "@nestjs/platform-express"
 import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger"
 import { Request, Response } from "express"
+import {
+  SwaggerAllEntriesFetched, SwaggerBrowserTypeError,
+  SwaggerEntryCreated, SwaggerEntryDeleted,
+  SwaggerEntryFetched, SwaggerEntryNotFound,
+  SwaggerEntryUpdated, SwaggerEntryValidationFailed,
+  SwaggerExportedToCsv, SwaggerExportedTypeError,
+  SwaggerFoundOnRespository, SwaggerImported,
+  SwaggerInternalServerError, SwaggerProduceImportErrorResult,
+  SwaggerUnauthorized
+} from "src/decorators/endpoint"
 import { exportToCSV, importFromBrowser } from "src/services/dataTransferServices"
 import {
   createEntry, deleteEntry, fetchAllEntries,
@@ -22,12 +32,19 @@ import {
 @ApiBearerAuth()
 export class DatabaseController {
   @Post("create")
+  @SwaggerUnauthorized()
+  @SwaggerEntryCreated()
+  @SwaggerFoundOnRespository()
+  @SwaggerEntryValidationFailed()
   async create(
     @Body() body: PassphraseEntryRequest,
     @Req() request: Request,
     @Res() response: Response
   ) {
-    const output = await createEntry(Translate.bearerToToken(request), body)
+    const output = await createEntry(
+      Translate.bearerToToken(request),
+      body
+    )
 
     return response.status(output.exitCode === 0
       ? HttpStatus.CREATED
@@ -39,6 +56,8 @@ export class DatabaseController {
   }
 
   @Get("fetch-all")
+  @SwaggerUnauthorized()
+  @SwaggerAllEntriesFetched()
   async fetchAll(
     @Req() request: Request,
     @Res() response: Response
@@ -54,6 +73,9 @@ export class DatabaseController {
   }
 
   @Get("fetch/:uuid")
+  @SwaggerUnauthorized()
+  @SwaggerEntryFetched()
+  @SwaggerEntryNotFound()
   async fetch(
     @Param("uuid") uuid: string,
     @Req() request: Request,
@@ -70,6 +92,7 @@ export class DatabaseController {
   }
 
   @Get("query")
+  @SwaggerUnauthorized()
   async query(
     @Query("q") q: string,
     @Req() request: Request,
@@ -86,6 +109,11 @@ export class DatabaseController {
   }
 
   @Put("update/:uuid")
+  @SwaggerUnauthorized()
+  @SwaggerEntryUpdated()
+  @SwaggerEntryNotFound()
+  @SwaggerFoundOnRespository()
+  @SwaggerEntryValidationFailed()
   async update(
     @Param("uuid") uuid: string,
     @Req() request: Request,
@@ -103,6 +131,9 @@ export class DatabaseController {
   }
 
   @Delete("delete/:uuid")
+  @SwaggerUnauthorized()
+  @SwaggerEntryDeleted()
+  @SwaggerEntryNotFound()
   async delete(
     @Param("uuid") uuid: string,
     @Req() request: Request,
@@ -118,15 +149,24 @@ export class DatabaseController {
   }
 
   @Post("import")
+  @ApiQuery({
+    type: ImportRequest,
+    description: "Specify browser type"
+  })
+  @SwaggerImported()
+  @SwaggerUnauthorized()
+  @SwaggerBrowserTypeError()
+  @SwaggerInternalServerError()
+  @SwaggerProduceImportErrorResult()
   @UseInterceptors(FileInterceptor("file"))
-  @ApiQuery({ type: ImportRequest, description: 'Decide export file format' })
   async import(
     @Req() request: Request,
     @UploadedFile() file: Express.Multer.File,
-    @Query() browser: keyof ImportRequest,
     @Res() response: Response
   ) {
-    const output = await importFromBrowser(Translate.bearerToToken(request), browser,
+    const output = await importFromBrowser(
+      Translate.bearerToToken(request),
+      request.query.browser as string,
       file.buffer.toString("utf-8")
     )
 
@@ -139,17 +179,28 @@ export class DatabaseController {
   }
 
   @Get("export")
-  @Header("Content-Type", "text/csv")
-  @ApiQuery({ type: ExportRequest, description: 'Decide export file format' })
+  @ApiQuery({
+    type: ExportRequest,
+    description: "Decide export file format"
+  })
+  @SwaggerUnauthorized()
+  @SwaggerExportedToCsv()
+  @SwaggerExportedTypeError()
   async export(
     @Req() request: Request,
-    @Query() type: keyof ExportRequest,
     @Res() response: Response
   ) {
-    const output = await exportToCSV(Translate.bearerToToken(request), type)
+    const output = await exportToCSV(
+      Translate.bearerToToken(request),
+      request.query.browser as string
+    )
 
     return response.status(
       Translate.exitToStatus(output.exitCode)
+    ).setHeader("Content-Type",
+      output.exitCode === 0
+        ? "text/csv"
+        : "application/json"
     ).send(output.exitCode === 0
       ? output.stdout
       : Translate.errorMessages(output.stderr)
