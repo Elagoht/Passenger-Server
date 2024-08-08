@@ -2,8 +2,13 @@ import {
   Body, Controller, HttpCode,
   HttpStatus, Patch, Post, Req, Res
 } from "@nestjs/common"
-import { ApiBearerAuth, ApiResponse, ApiTags } from "@nestjs/swagger"
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger"
 import { Request, Response } from 'express'
+import {
+  SwaggerCouldNotAuthenticate, SwaggerLoggedIn,
+  SwaggerMasterPassphraseUpdated, SwaggerRegistered,
+  SwaggerUnauthorized, SwaggerUserAlreadyExists
+} from "src/decorators/endpoint"
 import {
   loginToPassenger, registerToPassenger,
   resetMasterPassphrase
@@ -15,24 +20,8 @@ import { AuthRequest, ResetMasterPassphraseRequest } from "./dto"
 @Controller("/")
 export class AuthController {
   @Post("register")
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: "Successfully registered",
-    schema: {
-      example: {
-        message: "Registration successful."
-      }
-    }
-  })
-  @ApiResponse({
-    status: HttpStatus.CONFLICT,
-    description: "User already exists",
-    schema: {
-      example: {
-        message: "A user with the same username already exists"
-      }
-    }
-  })
+  @SwaggerRegistered()
+  @SwaggerUserAlreadyExists()
   async register(
     @Body() body: AuthRequest,
     @Res() response: Response
@@ -53,24 +42,8 @@ export class AuthController {
   }
 
   @Post("login")
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: "Successfully logged in",
-    schema: {
-      example: {
-        accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkJlYXJlciJ9...',
-      }
-    }
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: "Authorization failed",
-    schema: {
-      example: {
-        message: "Authorization failed."
-      }
-    }
-  })
+  @SwaggerLoggedIn()
+  @SwaggerCouldNotAuthenticate()
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() body: AuthRequest,
@@ -90,25 +63,9 @@ export class AuthController {
   }
 
   @Patch("reset")
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: "Successfully reset master passphrase",
-    schema: {
-      example: {
-        message: "Master passphrase reset successful."
-      }
-    }
-  })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: "Authorization failed",
-    schema: {
-      example: {
-        message: "Authorization failed."
-      }
-    }
-  })
   @ApiBearerAuth()
+  @SwaggerUnauthorized()
+  @SwaggerMasterPassphraseUpdated()
   async reset(
     @Body() body: ResetMasterPassphraseRequest,
     @Req() request: Request,

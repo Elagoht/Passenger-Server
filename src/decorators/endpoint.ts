@@ -14,6 +14,30 @@ export const SwaggerUnauthorized = () => ApiResponse({
   schema: { example: { message: "Authorization failed" } },
 })
 
+export const SwaggerCouldNotAuthenticate = () => ApiResponse({
+  status: HttpStatus.BAD_REQUEST,
+  description: "Authorization failed",
+  schema: { example: { message: "Authorization failed." } }
+})
+
+export const SwaggerLoggedIn = () => ApiResponse({
+  status: HttpStatus.OK,
+  description: "Successfully logged in",
+  schema: { example: { accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkJlYXJlciJ9...', } }
+})
+
+export const SwaggerRegistered = () => ApiResponse({
+  status: HttpStatus.CREATED,
+  description: "Successfully registered",
+  schema: { example: { message: "Registration successful." } }
+})
+
+export const SwaggerUserAlreadyExists = () => ApiResponse({
+  status: HttpStatus.CONFLICT,
+  description: "User already exists",
+  schema: { example: { message: "A user with the same username already exists" } }
+})
+
 export const SwaggerEntryValidationFailed = () => ApiResponse({
   status: HttpStatus.NOT_ACCEPTABLE,
   description: "Cannot validated entry",
@@ -95,4 +119,10 @@ export const SwaggerExportedTypeError = () => ApiResponse({
   status: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
   description: "Export type not supported",
   content: { 'application/json': { schema: { example: { message: "Export type not supported" } } } }
+})
+
+export const SwaggerMasterPassphraseUpdated = () => ApiResponse({
+  status: HttpStatus.OK,
+  description: "Successfully reset master passphrase",
+  schema: { example: { message: "Master passphrase reset successful." } }
 })
