@@ -1,4 +1,20 @@
-export const ReadWritableEntrySchema = {
+import { ReferenceObject, SchemaObject } from "@nestjs/swagger/dist/interfaces/open-api-spec.interface"
+
+const generateMessageSchema = (message: string) => ({
+  type: "object",
+  properties: { message: { type: "string" } },
+  example: { message }
+})
+
+export default generateMessageSchema
+
+export const LoginResponseSchema: SchemaObject & Partial<ReferenceObject> = {
+  type: "object",
+  properties: { accessToken: { type: "string" } },
+  example: { accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkJlYXJlciJ9...' }
+}
+
+export const ReadWritableEntrySchema: SchemaObject & Partial<ReferenceObject> = {
   type: "object",
   properties: {
     identity: { type: "string" },
@@ -20,7 +36,7 @@ export const ReadWritableEntrySchema = {
   }
 }
 
-export const ReadWritableEntryArraySchema = {
+export const ReadWritableEntryArraySchema: SchemaObject & Partial<ReferenceObject> = {
   type: "array",
   properties: {
     identity: { type: "string" },
@@ -31,20 +47,18 @@ export const ReadWritableEntryArraySchema = {
     id: { type: "string" },
     url: { type: "string" }
   },
-  example: [
-    {
-      identity: "john@doe.net",
-      created: "2024-08-08 23:08:08",
-      updated: "2024-08-08 23:08:08",
-      totalAccesses: 0,
-      platform: "Odysee",
-      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
-      url: "https://odysee.com"
-    }
-  ]
+  example: [{
+    identity: "john@doe.net",
+    created: "2024-08-08 23:08:08",
+    updated: "2024-08-08 23:08:08",
+    totalAccesses: 0,
+    platform: "Odysee",
+    id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+    url: "https://odysee.com"
+  }]
 }
 
-export const DatabaseEntrySchema = {
+export const DatabaseEntrySchema: SchemaObject & Partial<ReferenceObject> = {
   type: "object",
   properties: {
     passphraseHistory: {
@@ -69,21 +83,31 @@ export const DatabaseEntrySchema = {
     url: { type: "string" }
   },
   example: {
-    passphraseHistory: [
-      {
-        strength: 1,
-        length: 10,
-        created: "2024-08-08 23:07:17"
-      }
-    ],
+    passphraseHistory: [{
+      strength: 1,
+      length: 10,
+      created: "2024-08-08 23:08:08"
+    }],
     passphrase: "123johndoe",
     notes: "A video sharing platform",
     identity: "john@doe.net",
-    created: "2024-08-08 23:07:17",
-    updated: "2024-08-08 23:16:13",
+    created: "2024-08-08 23:08:08",
+    updated: "2024-08-08 23:16:16",
     totalAccesses: 1,
     platform: "Odysee",
     id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
     url: "https://odysee.com"
+  }
+}
+
+export const ProduceImportErrorResultSchema: SchemaObject & Partial<ReferenceObject> = {
+  type: "object",
+  properties: {
+    acceptables: { type: "string" },
+    notAcceptables: { type: "string" }
+  },
+  example: {
+    acceptables: "name,url,username,password,note\n...",
+    notAcceptables: "Skipped entries:\nname,url,username,password,note\nname,url,username,password,note\n...\nOther entries are acceptable.\n"
   }
 }

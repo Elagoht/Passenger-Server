@@ -1,6 +1,11 @@
 import { HttpStatus } from "@nestjs/common"
 import { ApiResponse } from "@nestjs/swagger"
-import { DatabaseEntrySchema, ReadWritableEntryArraySchema, ReadWritableEntrySchema } from "src/docs/schemas"
+import { ExportedCSVContent, ExportTypeErrorContent } from "src/docs/contents"
+import generateMessageSchema, {
+  DatabaseEntrySchema, LoginResponseSchema,
+  ProduceImportErrorResultSchema, ReadWritableEntryArraySchema,
+  ReadWritableEntrySchema
+} from "src/docs/schemas"
 
 export const SwaggerInternalServerError = () => ApiResponse({
   status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -23,37 +28,37 @@ export const SwaggerCouldNotAuthenticate = () => ApiResponse({
 export const SwaggerLoggedIn = () => ApiResponse({
   status: HttpStatus.OK,
   description: "Successfully logged in",
-  schema: { example: { accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkJlYXJlciJ9...', } }
+  schema: LoginResponseSchema
 })
 
 export const SwaggerRegistered = () => ApiResponse({
   status: HttpStatus.CREATED,
   description: "Successfully registered",
-  schema: { example: { message: "Registration successful." } }
+  schema: generateMessageSchema("Registration successful.")
 })
 
 export const SwaggerUserAlreadyExists = () => ApiResponse({
   status: HttpStatus.CONFLICT,
   description: "User already exists",
-  schema: { example: { message: "A user with the same username already exists" } }
+  schema: generateMessageSchema("A user with the same username already exists")
 })
 
 export const SwaggerEntryValidationFailed = () => ApiResponse({
   status: HttpStatus.NOT_ACCEPTABLE,
   description: "Cannot validated entry",
-  schema: { example: { message: "Passphrase must be at least 8 characters long" } }
+  schema: generateMessageSchema("Passphrase must be at least 8 characters long")
 })
 
 export const SwaggerFoundOnRespository = () => ApiResponse({
   status: HttpStatus.FORBIDDEN,
   description: "Mached with a passphrase in brute-force repository",
-  schema: { example: { message: "Your password is on a brute-force repository, not saved" } }
+  schema: generateMessageSchema("Your password is on a brute-force repository, not saved")
 })
 
 export const SwaggerEntryNotFound = () => ApiResponse({
   status: HttpStatus.NOT_FOUND,
   description: "Not found",
-  schema: { example: { message: "Entry not found" } }
+  schema: generateMessageSchema("Entry not found")
 })
 
 export const SwaggerEntryCreated = () => ApiResponse({
@@ -83,46 +88,41 @@ export const SwaggerEntryUpdated = () => ApiResponse({
 export const SwaggerEntryDeleted = () => ApiResponse({
   status: HttpStatus.OK,
   description: "Entry deleted",
-  schema: { example: { message: "Entry deleted" } }
+  schema: generateMessageSchema("Entry deleted")
 })
 
 export const SwaggerImported = () => ApiResponse({
   status: HttpStatus.OK,
   description: "Imported entries",
-  schema: { example: { message: "Imported 10 entries successfully." } }
+  schema: generateMessageSchema("Imported 10 entries successfully.")
 })
 
 export const SwaggerBrowserTypeError = () => ApiResponse({
   status: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
   description: "Browser type not supported",
-  schema: { example: { message: "Browser type not supported" } }
+  schema: generateMessageSchema("Browser type not supported")
 })
 
 export const SwaggerProduceImportErrorResult = () => ApiResponse({
   status: HttpStatus.BAD_REQUEST,
   description: "Acceptable and not acceptable formats in dedicated csv",
-  schema: {
-    example: {
-      acceptables: "name,url,username,password,note\n...",
-      notAcceptables: "Skipped entries:\nname,url,username,password,note\nname,url,username,password,note\n...\nOther entries are acceptable.\n"
-    }
-  }
+  schema: ProduceImportErrorResultSchema
 })
 
 export const SwaggerExportedToCsv = () => ApiResponse({
   status: HttpStatus.OK,
   description: "Exported entries in CSV format",
-  content: { 'text/csv': { schema: { type: "string", example: "name,url,username,password,note\n..." } } }
+  content: ExportedCSVContent
 })
 
-export const SwaggerExportedTypeError = () => ApiResponse({
+export const SwaggerExportTypeError = () => ApiResponse({
   status: HttpStatus.UNSUPPORTED_MEDIA_TYPE,
   description: "Export type not supported",
-  content: { 'application/json': { schema: { example: { message: "Export type not supported" } } } }
+  content: ExportTypeErrorContent
 })
 
 export const SwaggerMasterPassphraseUpdated = () => ApiResponse({
   status: HttpStatus.OK,
   description: "Successfully reset master passphrase",
-  schema: { example: { message: "Master passphrase reset successful." } }
+  schema: generateMessageSchema("Master passphrase reset successful.")
 })
