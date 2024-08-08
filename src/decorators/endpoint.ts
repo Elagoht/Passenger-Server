@@ -2,7 +2,7 @@ import { HttpStatus } from "@nestjs/common"
 import { ApiResponse } from "@nestjs/swagger"
 import { ExportedCSVContent, ExportTypeErrorContent } from "src/docs/contents"
 import generateMessageSchema, {
-  DatabaseEntrySchema, LoginResponseSchema,
+  DatabaseEntrySchema, GeneratedPassphraseSchema, LoginResponseSchema,
   ProduceImportErrorResultSchema, ReadWritableEntryArraySchema,
   ReadWritableEntrySchema
 } from "src/docs/schemas"
@@ -125,4 +125,10 @@ export const SwaggerMasterPassphraseUpdated = () => ApiResponse({
   status: HttpStatus.OK,
   description: "Successfully reset master passphrase",
   schema: generateMessageSchema("Master passphrase reset successful.")
+})
+
+export const SwaggerPassphraseGenerated = () => ApiResponse({
+  status: HttpStatus.OK,
+  description: "Passphrase generated",
+  schema: GeneratedPassphraseSchema
 })

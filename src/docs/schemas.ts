@@ -111,3 +111,15 @@ export const ProduceImportErrorResultSchema: SchemaObject & Partial<ReferenceObj
     notAcceptables: "Skipped entries:\nname,url,username,password,note\nname,url,username,password,note\n...\nOther entries are acceptable.\n"
   }
 }
+
+export const GeneratedPassphraseSchema: SchemaObject & Partial<ReferenceObject> = {
+  type: "object",
+  properties: {
+    passphrase: { type: "string" },
+    message: { type: "string", nullable: true }
+  },
+  example: {
+    generated: "eVyrC=S0!£4&TyY€6/y#|]I8I21!|9nk",
+    message: "Length exceeds 4096, defaulting to 32."
+  }
+}

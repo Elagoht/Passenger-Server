@@ -1,22 +1,31 @@
-import { Body, Controller, Get, HttpStatus, Post, Query, Res } from "@nestjs/common"
-import { ApiTags } from "@nestjs/swagger"
-import { Response } from 'express'
+import { Body, Controller, Get, HttpStatus, Post, Req, Res } from "@nestjs/common"
+import { ApiQuery, ApiTags } from "@nestjs/swagger"
+import { Request, Response } from 'express'
 import { generatePassphrase, manipulatePassphrase } from "../../services/generationServices"
 import { versionNumber } from "../../services/otherServices"
 import Translate from "../../utilities/Translate"
-import { ManipulateRequest } from "./dto"
+import { GenerateRequest, ManipulateRequest } from "./dto"
+import { SwaggerPassphraseGenerated } from "src/decorators/endpoint"
 
 @ApiTags("Generators")
 @Controller("/")
 export class GeneratorController {
   @Get("generate")
+  @SwaggerPassphraseGenerated()
+  @ApiQuery({
+    type: GenerateRequest,
+    description: "The length of the passphrase to generate.",
+  })
   async generate(
-    @Query("length") length: number = 32,
-    @Res() response: Response,
+    @Req() request: Request,
+    @Res() response: Response
   ) {
-    const output = await generatePassphrase(length <= 4096
-      ? length
-      : 32
+    const length = parseInt(request.query.length as string ?? "32")
+    const output = await generatePassphrase(length > 4096
+      ? 32
+      : length < 8
+        ? 32
+        : length
     )
 
     return response.status(
@@ -25,7 +34,9 @@ export class GeneratorController {
       generated: output.stdout,
       ...(length > 4096
         ? { message: "Length exceeds 4096, defaulting to 32." }
-        : {}
+        : length < 8
+          ? { message: "Length is less than 8, defaulting to 32." }
+          : {}
       )
     } : Translate.errorMessages(output.stderr))
   }
