@@ -3,7 +3,8 @@ export class AuthRequest {
   passphrase: string
 }
 
-export class ResetMasterPassphraseRequest extends AuthRequest {
+export class ResetMasterPassphraseRequest {
+  oldPassphrase: string
   newPassphrase: string
 }
 
@@ -17,4 +18,8 @@ export class PassphraseEntryRequest {
 
 export class ManipulateRequest {
   passphrase: string
+}
+
+export class ImportRequest {
+  browser: string
 }
