@@ -12,6 +12,10 @@ import exitStatus from "./ExitStatus";
 class Translate {
   public static exitToStatus = (exit: number): HttpStatus =>
     exitStatus[exit as keyof typeof exitStatus]
+
+  public static UnixErrorToMessage = (error: string): string => error
+    .replace(/^passenger: /, "")
+    .toLocaleUpperCase("en-US")
 }
 
 export default Translate
