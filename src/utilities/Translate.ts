@@ -1,5 +1,6 @@
 import { HttpStatus } from "@nestjs/common";
 import exitStatus from "./ExitStatus";
+import { Request } from "express";
 
 /**
  * Passenger CLI Translation Utility
@@ -22,6 +23,9 @@ class Translate {
   } => ({
     message: Translate.unixErrorToMessage(error)
   })
+
+  public static bearerToToken = (request: Request): string =>
+    Translate.bearerToToken(request)
 }
 
 export default Translate

@@ -1,19 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger"
 
-export class AuthRequest {
-  @ApiProperty({ example: "johndoe", required: true })
-  username: string
-  @ApiProperty({ example: "************", required: true })
-  passphrase: string
-}
-
-export class ResetMasterPassphraseRequest {
-  @ApiProperty({ example: "************" })
-  oldPassphrase: string
-  @ApiProperty({ example: "**************" })
-  newPassphrase: string
-}
-
 export class PassphraseEntryRequest {
   @ApiProperty({ example: "john@doe.net" })
   identity: string
@@ -27,11 +13,6 @@ export class PassphraseEntryRequest {
   notes: string
 }
 
-export class ManipulateRequest {
-  @ApiProperty({ example: "************" })
-  passphrase: string
-}
-
 enum BrowserType {
   CHROMIUM = "chromium",
   FIREFOX = "firefox",
@@ -39,11 +20,7 @@ enum BrowserType {
 }
 
 export class ImportRequest {
-  @ApiProperty({
-    enum: BrowserType,
-    example: BrowserType.CHROMIUM,
-    default: BrowserType.CHROMIUM
-  })
+  @ApiProperty({ enum: BrowserType, default: BrowserType.CHROMIUM })
   browser: string
 }
 
