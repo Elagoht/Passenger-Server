@@ -66,7 +66,8 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? { accessToken: output.stdout }
-      : { message: output.stderr })
+      : Translate.errorMessages(output.stderr)
+    )
   }
 
   @Post("reset")
@@ -83,11 +84,10 @@ export class PassengerController {
 
     return response.status(
       Translate.exitToStatus(output.exitCode)
-    ).send({
-      message: output.exitCode === 0
-        ? "Master passphrase reset successful."
-        : output.stderr
-    })
+    ).send(output.exitCode === 0
+      ? { message: "Master passphrase reset successful." }
+      : Translate.errorMessages(output.stderr)
+    )
   }
 
   @Post("create")
@@ -105,7 +105,7 @@ export class PassengerController {
       )
     ).send(output.exitCode === 0
       ? JSON.parse(output.stdout)
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 
@@ -122,7 +122,7 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? JSON.parse(output.stdout)
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 
@@ -136,11 +136,10 @@ export class PassengerController {
 
     return response.status(
       Translate.exitToStatus(output.exitCode)
-    ).send(output.exitCode === 0 ? {
-      entry: JSON.parse(output.stdout)
-    } : {
-      message: output.stderr
-    })
+    ).send(output.exitCode === 0
+      ? JSON.parse(output.stdout)
+      : Translate.errorMessages(output.stderr)
+    )
   }
 
   @Get("query")
@@ -153,11 +152,10 @@ export class PassengerController {
 
     return response.status(
       Translate.exitToStatus(output.exitCode)
-    ).send(output.exitCode === 0 ? {
-      entries: JSON.parse(output.stdout)
-    } : {
-      message: output.stderr
-    })
+    ).send(output.exitCode === 0
+      ? JSON.parse(output.stdout)
+      : Translate.errorMessages(output.stderr)
+    )
   }
 
   @Put("update/:uuid")
@@ -173,7 +171,7 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? JSON.parse(output.stdout)
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 
@@ -189,7 +187,7 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? JSON.parse(output.stdout)
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 
@@ -204,7 +202,7 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? JSON.parse(output.stdout)
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 
@@ -219,7 +217,7 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? JSON.parse(output.stdout)
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 
@@ -241,7 +239,7 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? JSON.parse(output.stdout)
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 
@@ -259,7 +257,7 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? output.stdout
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 
@@ -281,9 +279,7 @@ export class PassengerController {
         ? { message: "Length exceeds 4096, defaulting to 32." }
         : {}
       )
-    } : {
-      message: output.stderr
-    })
+    } : Translate.errorMessages(output.stderr))
   }
 
   @Post("manipulate")
@@ -309,7 +305,7 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? { manipulated: output.stdout }
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 
@@ -321,7 +317,7 @@ export class PassengerController {
       Translate.exitToStatus(output.exitCode)
     ).send(output.exitCode === 0
       ? { version: output.stdout }
-      : { message: output.stderr }
+      : Translate.errorMessages(output.stderr)
     )
   }
 }

@@ -13,9 +13,15 @@ class Translate {
   public static exitToStatus = (exit: number): HttpStatus =>
     exitStatus[exit as keyof typeof exitStatus]
 
-  public static UnixErrorToMessage = (error: string): string => error
+  public static unixErrorToMessage = (error: string): string => error
     .replace(/^passenger: /, "")
-    .toLocaleUpperCase("en-US")
+    .replace(/^[a-z]/, (letter) => letter.toUpperCase())
+
+  public static errorMessages = (error: string): {
+    message: string
+  } => ({
+    message: Translate.unixErrorToMessage(error)
+  })
 }
 
 export default Translate
