@@ -11,7 +11,7 @@ import {
   SwaggerEntryCreated, SwaggerEntryDeleted,
   SwaggerEntryFetched, SwaggerEntryNotFound,
   SwaggerEntryUpdated, SwaggerEntryValidationFailed,
-  SwaggerExportedToCsv, SwaggerExportedTypeError,
+  SwaggerExportedToCsv, SwaggerExportTypeError,
   SwaggerFoundOnRespository, SwaggerImported,
   SwaggerInternalServerError, SwaggerProduceImportErrorResult,
   SwaggerUnauthorized
@@ -185,7 +185,7 @@ export class DatabaseController {
   })
   @SwaggerUnauthorized()
   @SwaggerExportedToCsv()
-  @SwaggerExportedTypeError()
+  @SwaggerExportTypeError()
   async export(
     @Req() request: Request,
     @Res() response: Response
