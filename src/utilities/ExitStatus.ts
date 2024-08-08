@@ -5,6 +5,7 @@ import { HttpStatus } from "@nestjs/common";
  */
 const exitStatus = {
   0: HttpStatus.OK,
+  1: HttpStatus.BAD_REQUEST, // Fallback default error
   33: HttpStatus.SEE_OTHER,
   40: HttpStatus.BAD_REQUEST,
   41: HttpStatus.UNAUTHORIZED,
