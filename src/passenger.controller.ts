@@ -1,12 +1,13 @@
 import {
   Body, Controller, Delete, Get, Header,
-  Headers, HttpStatus, Param, Post, Put,
+  Headers, HttpCode, HttpStatus, Param, Post, Put,
   Query, Res, UploadedFile, UseInterceptors
 } from "@nestjs/common"
 import { FileInterceptor } from "@nestjs/platform-express"
+import { ApiQuery, ApiTags } from "@nestjs/swagger"
 import { Response } from 'express'
 import {
-  AuthRequest, ImportRequest, ManipulateRequest,
+  AuthRequest, ExportRequest, ImportRequest, ManipulateRequest,
   PassphraseEntryRequest,
   ResetMasterPassphraseRequest
 } from "./passenger.dto"
@@ -24,6 +25,7 @@ import {
 import { getDetectiveReports, getStatistics } from "./services/reportServices"
 import Translate from "./utilities/Translate"
 
+@ApiTags("Commands")
 @Controller("/")
 export class PassengerController {
   @Post("register")
@@ -46,6 +48,7 @@ export class PassengerController {
   }
 
   @Post("login")
+  @HttpCode(HttpStatus.OK)
   async login(
     @Body() body: AuthRequest,
     @Res() response: Response
@@ -54,6 +57,10 @@ export class PassengerController {
       body.username,
       body.passphrase
     )
+
+    console.log("stdout:", output.stdout)
+    console.log("stderr:", output.stderr)
+    console.log("exited:", output.exitCode)
 
     return response.status(
       Translate.exitToStatus(output.exitCode)
@@ -240,9 +247,10 @@ export class PassengerController {
 
   @Get("export")
   @Header("Content-Type", "text/csv")
+  @ApiQuery({ type: ExportRequest, description: 'Decide export file format' })
   async export(
     @Headers("authorization") authorization: string,
-    @Query("type") type: "bare" | "encrypted",
+    @Query() type: keyof ExportRequest,
     @Res() response: Response
   ) {
     const output = await exportToCSV(authorization, type)
@@ -299,11 +307,10 @@ export class PassengerController {
 
     return response.status(
       Translate.exitToStatus(output.exitCode)
-    ).send(output.exitCode === 0 ? {
-      manipulated: output.stdout
-    } : {
-      message: output.stderr
-    })
+    ).send(output.exitCode === 0
+      ? { manipulated: output.stdout }
+      : { message: output.stderr }
+    )
   }
 
   @Get("version")
@@ -312,10 +319,9 @@ export class PassengerController {
 
     return res.status(
       Translate.exitToStatus(output.exitCode)
-    ).send(output.exitCode === 0 ? {
-      version: output.stdout
-    } : {
-      message: output.stderr
-    })
+    ).send(output.exitCode === 0
+      ? { version: output.stdout }
+      : { message: output.stderr }
+    )
   }
 }
