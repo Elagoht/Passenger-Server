@@ -1,73 +1,60 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+<div style="text-align: center">
+<img src="https://raw.githubusercontent.com/Elagoht/Passenger-Landing/main/public/assets/logo.png" width="192" height="192" />
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+# Passenger Server
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+![Node.js](https://img.shields.io/badge/Node.js-Server-green?logo=node.js)
+![Nest.js](https://img.shields.io/badge/Nest.js-API-red?logo=nestjs&logoColor=red)
+![Passenger](https://img.shields.io/badge/Core_Version-0.3.0_beta.1-F2970D)
+![GitHub Repo stars](https://img.shields.io/github/stars/Elagoht/Passenger-server?style=flat)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/Elagoht/Passenger-server)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/Elagoht/Passenger-server)
+![GitHub License](https://img.shields.io/github/license/Elagoht/Passenger-server)
+</div>
 
-## Description
+Passenger Server is the translation utility to interact with Passenger Core over HTTP. You can think of Passenger CLI as a kernel and Passenger Server as a shell. You can use the CLI tool standalone, but if you want to access its power over the Web, here is the server.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+The main idea of ​​using Passenger as a web server was born to be able to use it on your own 'self-hosted' server. This project is not designed for general use.
 
-## Installation
+##  Installation
 
-```bash
-$ npm install
-```
+### Prerequisites
 
-## Running the app
+You **MUST** have the corresponding executable of Passenger CLI on `app/`. You can download it on [release page](https://github.com/Elagoht/Passenger-cli/releases) of the project.
 
-```bash
-# development
-$ npm run start
+### Running on Development Mode
 
-# watch mode
-$ npm run start:dev
+1. Clone the project.
+2. Open the directory.
+3. Install requirements
 
-# production mode
-$ npm run start:prod
-```
+  ```sh
+  npm install
+  ```
 
-## Test
+4. Run the project:
 
-```bash
-# unit tests
-$ npm run test
+  ```sh
+  npm run start:dev
+  # Or with Swagger document
+  SWAGGER=1 npm run start:dev
+  ```
 
-# e2e tests
-$ npm run test:e2e
+> [!NOTE]
+> Of you started server with swagger document, you can see the documentation on <https://localhost:3000/swagger>
 
-# test coverage
-$ npm run test:cov
-```
+## Usage
 
-## Support
+Once the server is running, you can access the API endpoints at <http://localhost:3000>.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Contributing
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+We welcome contributions! Please take a look at [CODE OF CONDUCT](./CODE_OF_CONDUCT.md).
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+This project is licensed under the GNU General Public License v3. See the [LICENSE](./LICENSE) file for details.
+
+---
+
+For more details, visit our [website](https://passenger-landing.vercel.app)
