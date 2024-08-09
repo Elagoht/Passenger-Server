@@ -1,4 +1,4 @@
-<div style="text-align: center">
+<div align="center">
 <img src="https://raw.githubusercontent.com/Elagoht/Passenger-Landing/main/public/assets/logo.png" width="192" height="192" />
 
 # Passenger Server
