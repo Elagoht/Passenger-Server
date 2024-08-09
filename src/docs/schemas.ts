@@ -123,3 +123,142 @@ export const GeneratedPassphraseSchema: SchemaObject & Partial<ReferenceObject> 
     message: "Length exceeds 4096, defaulting to 32."
   }
 }
+
+export const StatisticsSchema: SchemaObject & Partial<ReferenceObject> = {
+  // totalCount: number
+  //   averageLength: number
+  //   uniquePlatforms: string[]
+  //   uniquePlatformsCount: number
+  //   uniquePassphrases: number
+  //   mostAccessed: ListableDatabaseEntry[]
+  //   commonByPlatform: Array<ListableDatabaseEntry[]>
+  //   percentageOfCommon: number
+  //   mostCommon: string
+  //   strengths: Record<string, number>
+  //   averageStrength: number
+  //   weakPassphrases: ListableDatabaseEntry[]
+  //   mediumPassphrases: ListableDatabaseEntry[]
+  //   strongPassphrases: ListableDatabaseEntry[]
+
+  type: "object",
+  properties: {
+    totalCount: { type: "number" },
+    averageLength: { type: "number" },
+    uniquePlatforms: { type: "array", items: { type: "string" } },
+    uniquePlatformsCount: { type: "number" },
+    uniquePassphrases: { type: "number" },
+    mostAccessed: ReadWritableEntryArraySchema,
+    commonByPlatform: { type: "array", items: ReadWritableEntryArraySchema },
+    percentageOfCommon: { type: "number" },
+    mostCommon: { type: "string" },
+    strengths: { type: "object", additionalProperties: { type: "number" } },
+    averageStrength: { type: "number" },
+    weakPassphrases: ReadWritableEntryArraySchema,
+    mediumPassphrases: ReadWritableEntryArraySchema,
+    strongPassphrases: ReadWritableEntryArraySchema
+  },
+  example: {
+    totalCount: 100,
+    averageLength: 24,
+    uniquePlatforms: ["Odysee", "YouTube"],
+    uniquePlatformsCount: 48,
+    uniquePassphrases: 97,
+    mostAccessed: [{
+      identity: "john@doe.net",
+      created: "2024-08-08 23:08:08",
+      updated: "2024-08-08 23:08:08",
+      totalAccesses: 5,
+      platform: "Odysee",
+      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+      url: "https://odysee.com"
+    }],
+    commonByPlatform: [[{
+      identity: "john@doe.net",
+      created: "2024-08-08 23:08:08",
+      updated: "2024-08-08 23:08:08",
+      totalAccesses: 5,
+      platform: "Odysee",
+      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+      url: "https://odysee.com"
+    }]],
+    percentageOfCommon: 0.5,
+    mostCommon: "************",
+    strengths: { 0: 10, 1: 20, 2: 30, 3: 40, 4: 50, 5: 60, 6: 70, 7: 80, 8: 90, 9: 100 },
+    averageStrength: 5,
+    weakPassphrases: [{
+      identity: "john@doe.net",
+      created: "2024-08-08 23:08:08",
+      updated: "2024-08-08 23:08:08",
+      totalAccesses: 5,
+      platform: "Odysee",
+      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+      url: "https://odysee.com"
+    }],
+    mediumPassphrases: [{
+      identity: "john@doe.net",
+      created: "2024-08-08 23:08:08",
+      updated: "2024-08-08 23:08:08",
+      totalAccesses: 5,
+      platform: "Odysee",
+      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+      url: "https://odysee.com"
+    }],
+    strongPassphrases: [{
+      identity: "john@doe.net",
+      created: "2024-08-08 23:08:08",
+      updated: "2024-08-08 23:08:08",
+      totalAccesses: 5,
+      platform: "Odysee",
+      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+      url: "https://odysee.com"
+    }]
+  }
+}
+
+export const DetectiveReportSchema: SchemaObject & Partial<ReferenceObject> = {
+  type: "object",
+  properties: {
+    commonPassphrases: { type: "array", items: ReadWritableEntryArraySchema },
+    similarWithUsername: ReadWritableEntryArraySchema,
+    weakPassphrases: ReadWritableEntryArraySchema,
+    oldPassphrases: ReadWritableEntryArraySchema
+  },
+  example: {
+    commonPassphrases: [[{
+      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+      identity: "john@doe.net",
+      created: "2024-08-08 23:08:08",
+      updated: "2024-08-08 23:08:08",
+      totalAccesses: 5,
+      platform: "Odysee",
+      url: "https://odysee.com"
+    }]],
+    similarWithUsername: [{
+      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+      identity: "john@doe.net",
+      created: "2024-08-08 23:08:08",
+      updated: "2024-08-08 23:08:08",
+      totalAccesses: 5,
+      platform: "Odysee",
+      url: "https://odysee.com"
+    }],
+    weakPassphrases: [{
+      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+      identity: "john@doe.net",
+      created: "2024-08-08 23:08:08",
+      updated: "2024-08-08 23:08:08",
+      totalAccesses: 5,
+      platform: "Odysee",
+      url: "https://odysee.com"
+    }],
+    oldPassphrases: [{
+      id: "f31347c9-1ef5-4c80-a3ef-3fc5f22e8c33",
+      identity: "john@doe.net",
+      created: "2024-08-08 23:08:08",
+      updated: "2024-08-08 23:08:08",
+      totalAccesses: 5,
+      platform: "Odysee",
+      url: "https://odysee.com"
+    }]
+  }
+}

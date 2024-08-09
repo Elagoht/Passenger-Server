@@ -3,12 +3,14 @@ import { ApiBearerAuth, ApiTags } from "@nestjs/swagger"
 import { Request, Response } from 'express'
 import { getDetectiveReports, getStatistics } from "../../services/reportServices"
 import Translate from "../../utilities/Translate"
+import { SwaggerDetectiveReportsFetched, SwaggerStatisticsFetched } from "src/decorators/endpoint"
 
 @ApiTags("Reports")
 @Controller("/")
 @ApiBearerAuth()
 export class ReportController {
   @Get("stats")
+  @SwaggerStatisticsFetched()
   async stats(
     @Req() request: Request,
     @Res() response: Response
@@ -24,6 +26,7 @@ export class ReportController {
   }
 
   @Get("detect")
+  @SwaggerDetectiveReportsFetched()
   async detect(
     @Req() request: Request,
     @Res() response: Response

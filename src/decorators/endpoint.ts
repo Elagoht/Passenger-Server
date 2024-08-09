@@ -2,9 +2,10 @@ import { HttpStatus } from "@nestjs/common"
 import { ApiResponse } from "@nestjs/swagger"
 import { ExportedCSVContent, ExportTypeErrorContent } from "src/docs/contents"
 import generateMessageSchema, {
-  DatabaseEntrySchema, GeneratedPassphraseSchema, LoginResponseSchema,
+  DatabaseEntrySchema, DetectiveReportSchema, GeneratedPassphraseSchema, LoginResponseSchema,
   ProduceImportErrorResultSchema, ReadWritableEntryArraySchema,
-  ReadWritableEntrySchema
+  ReadWritableEntrySchema,
+  StatisticsSchema
 } from "src/docs/schemas"
 
 export const SwaggerInternalServerError = () => ApiResponse({
@@ -137,4 +138,16 @@ export const SwaggerVersionFetched = () => ApiResponse({
   status: HttpStatus.OK,
   description: "Version information",
   schema: generateMessageSchema("Passenger CLI X.Y.Z")
+})
+
+export const SwaggerStatisticsFetched = () => ApiResponse({
+  status: HttpStatus.OK,
+  description: "Statistics fetched",
+  schema: StatisticsSchema
+})
+
+export const SwaggerDetectiveReportsFetched = () => ApiResponse({
+  status: HttpStatus.OK,
+  description: "Detective reports fetched",
+  schema: DetectiveReportSchema
 })
