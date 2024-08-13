@@ -25,7 +25,7 @@ class Translate {
   })
 
   public static bearerToToken = (request: Request): string =>
-    request.headers.authorization.replace(/^Bearer /, "")
+    request.headers.authorization?.replace(/^Bearer /, "") ?? ""
 }
 
 export default Translate
