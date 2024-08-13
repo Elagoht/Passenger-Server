@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 
 async function bootstrap() {
   const passenger = await NestFactory.create(PassengerModule)
+  passenger.enableCors();
 
   if (process.env.SWAGGER === "1") {
     const document = SwaggerModule.createDocument(
