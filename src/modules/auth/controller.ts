@@ -34,11 +34,10 @@ export class AuthController {
     return response.status(output.exitCode === 0
       ? HttpStatus.CREATED
       : Translate.exitToStatus(output.exitCode)
-    ).send({
-      message: output.exitCode === 0
-        ? "Registration successful."
-        : Translate.errorMessages(output.stderr)
-    })
+    ).send(output.exitCode === 0
+      ? { message: "Registration successful." }
+      : Translate.errorMessages(output.stderr)
+    )
   }
 
   @Post("login")
