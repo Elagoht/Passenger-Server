@@ -4,7 +4,10 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger"
 
 async function bootstrap() {
   const passenger = await NestFactory.create(PassengerModule)
-  passenger.enableCors();
+  passenger.enableCors({
+    origin: "*",
+    maxAge: 86400
+  })
 
   if (process.env.SWAGGER === "1") {
     const document = SwaggerModule.createDocument(
