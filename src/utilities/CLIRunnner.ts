@@ -1,5 +1,5 @@
-import { spawn } from "child_process";
-import Logger from "./Logger";
+import { spawn } from "child_process"
+import Logger from "./Logger"
 
 const execute = (
   verb: string,
@@ -17,47 +17,47 @@ const execute = (
         ...process.env,
         ...options.env
       }
-    });
+    })
 
-    let stdout = "";
-    let stderr = "";
+    let stdout = ""
+    let stderr = ""
 
-    child.stdin.write(options.piped || "");
-    child.stdin.end();
+    child.stdin.write(options.piped || "")
+    child.stdin.end()
 
     child.stdout.on("data", (data) => {
-      stdout += data.toString();
-    });
+      stdout += data.toString()
+    })
 
     child.stderr.on("data", (data) => {
-      stderr += data.toString();
-    });
+      stderr += data.toString()
+    })
 
     child.on("error", (err) => {
-      console.error(`Failed to execute child process: ${err.message}`);
-      reject(new Error(`Failed to execute core command: ${err.message}`));
-    });
+      console.error(`Failed to execute child process: ${err.message}`)
+      reject(new Error(`Failed to execute core command: ${err.message}`))
+    })
 
     // Add a timeout to prevent infinite waiting
     const timeout = setTimeout(() => {
-      child.kill();
-      reject(new Error('Process timed out'));
-    }, 60000); // Timeout after a minute
+      child.kill()
+      reject(new Error('Process timed out'))
+    }, 60000) // Timeout after a minute
 
     // Clear timeout on successful completion
     child.on("close", (exitCode) => {
-      clearTimeout(timeout);
+      clearTimeout(timeout)
       resolve({
         stdout: stdout.trim(),
         stderr: stderr.trim(),
         exitCode
-      });
-    });
+      })
+    })
 
     child.on("exit", (exitCode) => exitCode === 0
       ? Logger.success(verb)
-      : Logger.error(`${verb} ${args.join(" ")} >> ${exitCode}`));
-  });
-};
+      : Logger.error(`${verb} ${args.join(" ")} >> ${exitCode}`))
+  })
+}
 
-export default execute;
+export default execute
