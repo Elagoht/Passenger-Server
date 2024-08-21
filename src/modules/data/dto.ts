@@ -22,6 +22,7 @@ enum BrowserType {
 export class ImportRequest {
   @ApiProperty({ enum: BrowserType, default: BrowserType.CHROMIUM })
   browser: string
+  file: Express.Multer.File
 }
 
 export enum ExportType {

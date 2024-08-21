@@ -4,7 +4,7 @@ import {
   Req, Res, UploadedFile, UseInterceptors
 } from "@nestjs/common"
 import { FileInterceptor } from "@nestjs/platform-express"
-import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger"
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiTags } from "@nestjs/swagger"
 import { Request, Response } from "express"
 import {
   SwaggerAllEntriesFetched, SwaggerBrowserTypeError,
@@ -26,6 +26,7 @@ import {
   ExportRequest, ImportRequest,
   PassphraseEntryRequest
 } from "./dto"
+import { checkCSVFile } from "src/utilities/FileChecker"
 
 @ApiTags("Database")
 @Controller("/")
@@ -149,7 +150,7 @@ export class DatabaseController {
   }
 
   @Post("import")
-  @ApiQuery({
+  @ApiBody({
     type: ImportRequest,
     description: "Specify browser type"
   })
@@ -161,12 +162,20 @@ export class DatabaseController {
   @UseInterceptors(FileInterceptor("file"))
   async import(
     @Req() request: Request,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file: ImportRequest["file"],
+    @Body("browser") browser: ImportRequest["browser"],
     @Res() response: Response
   ) {
+    const check = checkCSVFile(file)
+    if (check[0] !== HttpStatus.OK) return response.status(
+      check[0]
+    ).send(Translate.errorMessages(
+      check[1]
+    ))
+
     const output = await importFromBrowser(
       Translate.bearerToToken(request),
-      request.query.browser as string,
+      browser,
       file.buffer.toString("utf-8")
     )
 
