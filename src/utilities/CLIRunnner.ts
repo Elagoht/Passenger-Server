@@ -1,6 +1,10 @@
 import { spawn } from "child_process"
 import Logger from "./Logger"
 
+function sanitizeInput(input: string | undefined): string {
+  return `'${input.replace(/'/g, "\\'")}'`
+}
+
 const execute = (
   verb: string,
   args: string[],
@@ -10,9 +14,15 @@ const execute = (
   }
 ): Promise<Output> => {
   return new Promise((resolve, reject) => {
-    const child = spawn(
-      "./core/passenger",
-      [verb, ...args], {
+    // Sanitize verb and args
+    const sanitizedVerb = sanitizeInput(verb)
+    const sanitizedArgs = args.map(arg => sanitizeInput(arg))
+
+    // Create command string
+    const command = `echo "${sanitizeInput(options.piped || "")}" | ./core/passenger ${sanitizedVerb} ${sanitizedArgs.join(" ")}`
+
+    const child = spawn(command, {
+      shell: true, // Ensure the command string is interpreted as a shell command
       env: {
         ...process.env,
         ...options.env
@@ -41,7 +51,7 @@ const execute = (
     // Add a timeout to prevent infinite waiting
     const timeout = setTimeout(() => {
       child.kill()
-      reject(new Error('Process timed out'))
+      reject(new Error("Process timed out"))
     }, 60000) // Timeout after a minute
 
     // Clear timeout on successful completion
