@@ -55,7 +55,7 @@ const execute = (
     });
 
     child.on("exit", (exitCode) => exitCode === 0
-      ? Logger.success(`${verb} ${args.join(" ")}`)
+      ? Logger.success(verb)
       : Logger.error(`${verb} ${args.join(" ")} >> ${exitCode}`));
   });
 };
